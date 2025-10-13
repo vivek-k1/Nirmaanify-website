@@ -2,9 +2,6 @@ import json
 import os
 import re
 from flask import Blueprint, request, jsonify
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 
 faq_bp = Blueprint('faq', __name__)
 FAQ_FILE = 'data/faqs.json'
@@ -12,15 +9,7 @@ FAQ_FILE = 'data/faqs.json'
 class FAQRAGModel:
     def __init__(self):
         self.faqs = []
-        self.vectorizer = TfidfVectorizer(
-            lowercase=True,
-            stop_words='english',
-            ngram_range=(1, 2),
-            max_features=1000
-        )
-        self.faq_vectors = None
         self.load_faqs()
-        self.build_index()
     
     def load_faqs(self):
         try:
@@ -34,31 +23,36 @@ class FAQRAGModel:
         text = re.sub(r'[^a-zA-Z0-9\s]', '', text.lower())
         return text.strip()
     
-    def build_index(self):
-        if not self.faqs:
-            return
-        documents = []
-        for faq in self.faqs:
-            combined_text = f"{faq['question']} {faq['answer']} {' '.join(faq.get('keywords', []))}"
-            documents.append(self.preprocess_text(combined_text))
-        self.faq_vectors = self.vectorizer.fit_transform(documents)
+    def simple_similarity(self, query, text):
+        """Simple keyword-based similarity scoring"""
+        query_words = set(self.preprocess_text(query).split())
+        text_words = set(self.preprocess_text(text).split())
+        
+        if not query_words or not text_words:
+            return 0
+        
+        intersection = query_words.intersection(text_words)
+        union = query_words.union(text_words)
+        
+        return len(intersection) / len(union) if union else 0
     
     def search_faqs(self, query, top_k=3, threshold=0.1):
-        if not self.faqs or self.faq_vectors is None:
+        if not self.faqs:
             return []
-        processed_query = self.preprocess_text(query)
-        query_vector = self.vectorizer.transform([processed_query])
-        similarities = cosine_similarity(query_vector, self.faq_vectors).flatten()
-        top_indices = np.argsort(similarities)[::-1][:top_k]
         
         results = []
-        for idx in top_indices:
-            if similarities[idx] > threshold:
-                faq = self.faqs[idx].copy()
-                faq['similarity_score'] = float(similarities[idx])
-                results.append(faq)
+        for faq in self.faqs:
+            combined_text = f"{faq['question']} {faq['answer']} {' '.join(faq.get('keywords', []))}"
+            similarity = self.simple_similarity(query, combined_text)
+            
+            if similarity > threshold:
+                faq_copy = faq.copy()
+                faq_copy['similarity_score'] = similarity
+                results.append(faq_copy)
         
-        return results
+        # Sort by similarity score and return top_k
+        results.sort(key=lambda x: x['similarity_score'], reverse=True)
+        return results[:top_k]
     
     def get_all_faqs(self):
         return self.faqs
@@ -68,7 +62,7 @@ class FAQRAGModel:
 
 rag_model = FAQRAGModel()
 
-@faq_bp.route('/faq/search', methods=['POST'])
+@faq_bp.route('/api/faq/search', methods=['POST'])
 def search_faq():
     try:
         data = request.get_json()
@@ -129,9 +123,9 @@ def get_faqs_by_category(category):
 
 @faq_bp.route('/faq/health', methods=['GET'])
 def faq_health():
-    return jsonify({
-        'success': True,
-        'status': 'healthy',
-        'total_faqs': len(rag_model.get_all_faqs()),
-        'model_ready': rag_model.faq_vectors is not None
-    })
+        return jsonify({
+            'success': True,
+            'status': 'healthy',
+            'total_faqs': len(rag_model.get_all_faqs()),
+            'model_ready': True
+        })
