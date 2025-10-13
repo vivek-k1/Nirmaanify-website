@@ -1,0 +1,88 @@
+{
+  "contacts": [
+    {
+      "id": "contact_20250823_142906",
+      "type": "contact",
+      "timestamp": "2025-08-23T14:29:06.866210",
+      "data": {
+        "name": "vivek",
+        "email": "beindian05@gmail.com",
+        "phone": "6205818208",
+        "subject": "partnership",
+        "message": "hii",
+        "urgency": "urgent",
+        "budget": "under-50k"
+      }
+    },
+    {
+      "id": "contact_20251012_165741",
+      "type": "contact",
+      "timestamp": "2025-10-12T16:57:41.407159",
+      "data": {
+        "name": "shikha rani",
+        "email": "Shikharani6983@gmail.com",
+        "phone": "6283796279",
+        "subject": "internship",
+        "message": "Hlo ",
+        "urgency": "",
+        "budget": ""
+      }
+    }
+  ],
+  "services": [
+    {
+      "id": "service_20250823_152325",
+      "type": "service_request",
+      "timestamp": "2025-08-23T15:23:25.853924",
+      "data": {
+        "name": "Rohit ",
+        "email": "rohit@gmail.com",
+        "company": "Piyush Medical",
+        "service": "mobile-app",
+        "project_details": "i need a app for my business ",
+        "budget": "under-50k",
+        "timeline": "1-2-months"
+      }
+    }
+  ],
+  "internships": [
+    {
+      "id": "internship_20250823_151459",
+      "type": "internship_application",
+      "timestamp": "2025-08-23T15:14:59.830323",
+      "data": {
+        "name": "Test",
+        "email": "user@gmail.com",
+        "phone": "1234567891",
+        "college": "Iittt",
+        "course": "Hdhd",
+        "year": "4th",
+        "area": "devops",
+        "skills": "Bbdbd",
+        "duration": "flexible",
+        "start_date": "2025-08",
+        "availability": "weekends",
+        "motivation": "Nnen"
+      }
+    },
+    {
+      "id": "internship_20251012_165704",
+      "type": "internship_application",
+      "timestamp": "2025-10-12T16:57:04.150392",
+      "data": {
+        "name": "shikha rani",
+        "email": "Shikharani6983@gmail.com",
+        "phone": "6283796279",
+        "college": "Indian Institute of Technology Madras",
+        "course": "Data Science",
+        "year": "2nd",
+        "area": "backend",
+        "skills": "Know HTML, CSS, JavaScript for web pages\n\nCan use Python and Flask for coding\n\nWorked with Node.js and Express for backend\n\nCan use Jinja templates\n\nGood with PostgreSQL database",
+        "duration": "3-months",
+        "start_date": "2025-10",
+        "availability": "flexible",
+        "motivation": "I want to intern at Nirmaanify because I am excited to learn by working on real projects. I like that Nirmaanify helps in building skills and offers a good learning environment. I believe this experience will help me improve my technical abilities and teamwork.\n\n"
+      }
+    }
+  ]
+}

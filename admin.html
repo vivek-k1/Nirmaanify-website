@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Nirmaanify</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Password Protection Styles */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #6A3EE8 0%, #8B5CF6 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .password-form {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .password-form h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .password-form p {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #6A3EE8;
+        }
+
+        .login-btn {
+            background: #6A3EE8;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background: #5A2ED8;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        .admin-content.authenticated {
+            display: block;
+        }
+
+        /* Always show admin header */
+        .admin-header {
+            display: block !important;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #6A3EE8 0%, #8B5CF6 100%);
+            color: white;
+            padding: 3rem 0;
+            margin: 2rem 0;
+        }
+
+        .admin-header-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 1.5rem;
+            text-align: center;
+        }
+
+        .admin-title {
+            text-align: center;
+        }
+
+        .admin-title h1 {
+            margin: 0 0 0.5rem 0;
+        }
+
+        .admin-title p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .admin-header-content {
+                gap: 1rem;
+            }
+        }
+        
+        .admin-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card.clickable {
+            cursor: pointer;
+        }
+        
+        .stat-card.clickable:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(106, 62, 232, 0.2);
+            border: 2px solid #6A3EE8;
+        }
+        
+        .stat-card.clickable:active {
+            transform: translateY(-2px);
+        }
+        
+        .stat-card.active {
+            background: linear-gradient(135deg, #6A3EE8 0%, #8B5CF6 100%);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(106, 62, 232, 0.3);
+        }
+        
+        .stat-card.active .stat-number,
+        .stat-card.active .stat-label {
+            color: white;
+        }
+        
+        .stat-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            opacity: 0.7;
+        }
+        
+        .stat-card.active .stat-icon {
+            opacity: 1;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #6A3EE8;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .submissions-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: #333;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #6A3EE8;
+        }
+        
+        .submission-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .submission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .submission-type {
+            background: #6A3EE8;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .submission-time {
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
+        .submission-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+        }
+        
+        .data-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .data-label {
+            font-weight: 500;
+            color: #333;
+            font-size: 0.9rem;
+        }
+        
+        .data-value {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .refresh-btn {
+            background: #6A3EE8;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        
+        .refresh-btn:hover {
+            background: #5A2ED8;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .no-submissions {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-style: italic;
+        }
+        
+        /* Filter indicators */
+        .filter-indicator {
+            display: inline-block;
+            background: #6A3EE8;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 1rem;
+            font-weight: 500;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+            
+            .stat-icon {
+                font-size: 1.2rem;
+                top: 0.75rem;
+                right: 0.75rem;
+            }
+            
+            .submissions-section {
+                padding: 1.5rem;
+            }
+            
+            .submission-data {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="password-overlay" id="passwordOverlay">
+        <div class="password-form">
+            <h2>🔐 Admin Access</h2>
+            <p>Please enter the admin password to continue</p>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Enter password" autocomplete="off">
+            <button class="login-btn" onclick="checkPassword()">Login</button>
+            <div class="error-message" id="errorMessage">Incorrect password. Please try again.</div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="nirmaanify-logo.jpg" alt="Nirmaanify Logo" class="logo-img">
+                <span>Nirmaanify</span>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="services.html" class="nav-link">Services</a>
+                <a href="training.html" class="nav-link">Training</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="admin.html" class="nav-link active">Admin</a>
+                
+                
+            </nav>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <section class="admin-header">
+        <div class="container">
+            <div class="admin-header-content">
+                <div class="admin-title">
+                    <h1>Admin Dashboard</h1>
+                    <p style="color: rgb(240, 240, 51)">Monitor form submissions and website activity</p>
+                </div>
+                                 <button class="logout-btn" onclick="logout()" id="logoutBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 7L15.59 8.41L18.17 11H8V13H18.17L15.59 15.59L17 17L22 12L17 7ZM4 5H12V3H4C2.9 3 2 3.9 2 5V19C2 20.1 2.9 21 4 21H12V19H4V5Z" fill="white"/>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <main class="admin-content" id="adminContent">
+        <button class="refresh-btn" onclick="refreshData()">🔄 Refresh Data</button>
+        
+        <div class="stats-grid">
+            <div class="stat-card clickable" onclick="filterSubmissions('contacts')">
+                <div class="stat-number" id="totalContacts">-</div>
+                <div class="stat-label">Contact Messages</div>
+                <div class="stat-icon">📧</div>
+            </div>
+            <div class="stat-card clickable" onclick="filterSubmissions('services')">
+                <div class="stat-number" id="totalServices">-</div>
+                <div class="stat-label">Service Requests</div>
+                <div class="stat-icon">🔧</div>
+            </div>
+            <div class="stat-card clickable" onclick="filterSubmissions('internships')">
+                <div class="stat-number" id="totalInternships">-</div>
+                <div class="stat-label">Internship Applications</div>
+                <div class="stat-icon">🎓</div>
+            </div>
+            <div class="stat-card clickable" onclick="filterSubmissions('all')">
+                <div class="stat-number" id="totalSubmissions">-</div>
+                <div class="stat-label">Total Submissions</div>
+                <div class="stat-icon">📊</div>
+            </div>
+        </div>
+
+        <div class="submissions-section">
+            <h2 class="section-title">Recent Submissions</h2>
+            <div id="submissionsList">
+                <div class="loading">Loading submissions...</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="professional-footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section footer-brand">
+                    <div class="footer-logo">
+                        <h3>Nirmaanify</h3>
+                        <p>Transforming ideas into digital reality through innovative web development, mobile applications, and comprehensive tech training programs.</p>
+                    </div>
+                    <div class="social-media">
+                        <a href="#" aria-label="LinkedIn">📱</a>
+                        <a href="#" aria-label="Twitter">🐦</a>
+                        <a href="#" aria-label="GitHub">💻</a>
+                        <a href="#" aria-label="Instagram">📷</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="services.html">Web Development</a></li>
+                        <li><a href="services.html">Mobile Applications</a></li>
+                        <li><a href="services.html">Cloud Solutions</a></li>
+                        <li><a href="services.html">Digital Transformation</a></li>
+                        <li><a href="training.html">Tech Training</a></li>
+                        <li><a href="training.html">Internship Programs</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="training.html">Join Our Program</a></li>
+                        <li><a href="services.html">Request Quote</a></li>
+                        <li><a href="admin.html">Admin Dashboard</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <img src="svg/mail.svg" alt="Email" class="svg-icon">
+                            </div>
+                            <p>contact@nirmaanify.com</p>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <img src="svg/phone.svg" alt="Phone" class="svg-icon">
+                            </div>
+                            <p>+91-326-6356-5201</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2025 Nirmaanify. All rights reserved.</p>
+                    <div class="footer-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Cookie Policy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        const ADMIN_PASSWORD = 'nirmaanvr01';
+        let isAuthenticated = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const authenticated = localStorage.getItem('adminAuthenticated');
+            if (authenticated === 'true') {
+                isAuthenticated = true;
+                showAdminDashboard();
+            }
+        });
+
+        function checkPassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const password = passwordInput.value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (password === ADMIN_PASSWORD) {
+                isAuthenticated = true;
+                localStorage.setItem('adminAuthenticated', 'true');
+                showAdminDashboard();
+                hidePasswordOverlay();
+            } else {
+                errorMessage.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+
+        function showAdminDashboard() {
+            const adminContent = document.getElementById('adminContent');
+            adminContent.classList.add('authenticated');
+            loadSubmissions();
+        }
+
+        function hidePasswordOverlay() {
+            const passwordOverlay = document.getElementById('passwordOverlay');
+            passwordOverlay.style.display = 'none';
+        }
+
+        function logout() {
+            // Clear authentication
+            isAuthenticated = false;
+            sessionStorage.removeItem('adminAuthenticated');
+            
+            // Hide admin content and show password overlay
+            const adminContent = document.getElementById('adminContent');
+            const passwordOverlay = document.getElementById('passwordOverlay');
+            
+            adminContent.classList.remove('authenticated');
+            passwordOverlay.style.display = 'flex';
+            
+            // Clear password input
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            // Focus on password input
+            document.getElementById('passwordInput').focus();
+        }
+
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        let submissionsData = null;
+        let currentFilter = 'all';
+
+        async function loadSubmissions() {
+            try {
+                const response = await fetch('/api/submissions');
+                const result = await response.json();
+                
+                if (result.success) {
+                    submissionsData = result.data;
+                    updateStats(result.counts);
+                    displaySubmissions(result.data, currentFilter);
+                } else {
+                    showError('Failed to load submissions: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error loading submissions:', error);
+                showError('Network error. Please check if the Flask server is running.');
+            }
+        }
+        
+        function filterSubmissions(filter) {
+            currentFilter = filter;
+            
+            // Update active card
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Find and activate the clicked card
+            const cardMapping = {
+                'contacts': 0,
+                'services': 1,
+                'internships': 2,
+                'all': 3
+            };
+            
+            const cards = document.querySelectorAll('.stat-card');
+            if (cards[cardMapping[filter]]) {
+                cards[cardMapping[filter]].classList.add('active');
+            }
+            
+            // Update section title
+            const sectionTitle = document.querySelector('.section-title');
+            switch(filter) {
+                case 'contacts':
+                    sectionTitle.textContent = 'Contact Messages';
+                    break;
+                case 'services':
+                    sectionTitle.textContent = 'Service Requests';
+                    break;
+                case 'internships':
+                    sectionTitle.textContent = 'Internship Applications';
+                    break;
+                case 'all':
+                default:
+                    sectionTitle.textContent = 'Recent Submissions';
+                    break;
+            }
+            
+            // Display filtered submissions
+            if (submissionsData) {
+                displaySubmissions(submissionsData, filter);
+            }
+        }
+
+        function updateStats(counts) {
+            document.getElementById('totalContacts').textContent = counts.contacts || 0;
+            document.getElementById('totalServices').textContent = counts.services || 0;
+            document.getElementById('totalInternships').textContent = counts.internships || 0;
+            document.getElementById('totalSubmissions').textContent = 
+                (counts.contacts || 0) + (counts.services || 0) + (counts.internships || 0);
+        }
+
+        function displaySubmissions(data, filter = 'all') {
+            const submissionsList = document.getElementById('submissionsList');
+            
+            if (!data || (!data.contacts.length && !data.services.length && !data.internships.length)) {
+                submissionsList.innerHTML = '<div class="no-submissions">No submissions yet. Forms will appear here when submitted.</div>';
+                return;
+            }
+
+            let filteredSubmissions = [];
+            
+            // Filter submissions based on selected filter
+            switch(filter) {
+                case 'contacts':
+                    filteredSubmissions = data.contacts.map(s => ({...s, category: 'Contact'}));
+                    break;
+                case 'services':
+                    filteredSubmissions = data.services.map(s => ({...s, category: 'Service'}));
+                    break;
+                case 'internships':
+                    filteredSubmissions = data.internships.map(s => ({...s, category: 'Internship'}));
+                    break;
+                case 'all':
+                default:
+                    // Combine all submissions
+                    filteredSubmissions = [
+                        ...data.contacts.map(s => ({...s, category: 'Contact'})),
+                        ...data.services.map(s => ({...s, category: 'Service'})),
+                        ...data.internships.map(s => ({...s, category: 'Internship'}))
+                    ];
+                    break;
+            }
+            
+            // Sort by timestamp (newest first)
+            filteredSubmissions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            if (filteredSubmissions.length === 0) {
+                const noDataMessage = filter === 'all' ? 
+                    'No submissions yet. Forms will appear here when submitted.' :
+                    `No ${filter} submissions yet.`;
+                submissionsList.innerHTML = `<div class="no-submissions">${noDataMessage}</div>`;
+                return;
+            }
+
+            let html = '';
+            filteredSubmissions.forEach(submission => {
+                html += createSubmissionCard(submission);
+            });
+            
+            submissionsList.innerHTML = html;
+        }
+
+        function createSubmissionCard(submission) {
+            const date = new Date(submission.timestamp).toLocaleString();
+            const data = submission.data;
+            
+            let dataHtml = '';
+            
+            // Generate data fields based on submission type
+            Object.entries(data).forEach(([key, value]) => {
+                if (value) {
+                    const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                    dataHtml += `
+                        <div class="data-item">
+                            <span class="data-label">${label}:</span>
+                            <span class="data-value">${value}</span>
+                        </div>
+                    `;
+                }
+            });
+
+            return `
+                <div class="submission-card">
+                    <div class="submission-header">
+                        <span class="submission-type">${submission.category}</span>
+                        <span class="submission-time">${date}</span>
+                    </div>
+                    <div class="submission-data">
+                        ${dataHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function refreshData() {
+            const refreshBtn = document.querySelector('.refresh-btn');
+            refreshBtn.textContent = '🔄 Refreshing...';
+            refreshBtn.disabled = true;
+            
+            loadSubmissions().finally(() => {
+                refreshBtn.textContent = '🔄 Refresh Data';
+                refreshBtn.disabled = false;
+            });
+        }
+
+        function showError(message) {
+            const submissionsList = document.getElementById('submissionsList');
+            submissionsList.innerHTML = `<div class="error">${message}</div>`;
+        }
+
+        setInterval(() => {
+            if (isAuthenticated) {
+                loadSubmissions();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
