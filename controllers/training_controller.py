@@ -4,12 +4,9 @@ import os
 from datetime import datetime
 
 training_bp = Blueprint('training', __name__)
-
-# Data file path
 DATA_FILE = 'data/submissions.json'
 
 def load_data():
-    """Load existing data from JSON file"""
     try:
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -17,18 +14,13 @@ def load_data():
         return {'contacts': [], 'services': [], 'internships': []}
 
 def save_data(data):
-    """Save data to JSON file"""
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 @training_bp.route('/training', methods=['POST'])
 def submit_internship_application():
-    """Handle internship application form submission"""
     try:
-        # Get form data
         form_data = request.get_json()
-        
-        # Validate required fields
         required_fields = ['name', 'email', 'phone', 'area', 'skills', 'duration', 'motivation']
         for field in required_fields:
             if not form_data.get(field):
@@ -36,8 +28,6 @@ def submit_internship_application():
                     'success': False,
                     'error': f'Missing required field: {field}'
                 }), 400
-        
-        # Create internship application submission
         internship_submission = {
             'id': f'internship_{datetime.now().strftime("%Y%m%d_%H%M%S")}',
             'type': 'internship_application',
@@ -57,17 +47,9 @@ def submit_internship_application():
                 'motivation': form_data['motivation']
             }
         }
-        
-        # Load existing data
         data = load_data()
-        
-        # Add new internship submission
         data['internships'].append(internship_submission)
-        
-        # Save updated data
         save_data(data)
-        
-        # Log submission (for debugging)
         print(f"🎓 New internship application from: {form_data['name']} ({form_data['email']})")
         print(f"   Area: {form_data['area']}")
         print(f"   Duration: {form_data['duration']}")
@@ -90,11 +72,8 @@ def submit_internship_application():
 
 @training_bp.route('/training/<submission_id>', methods=['GET'])
 def get_internship_submission(submission_id):
-    """Get a specific internship submission by ID"""
     try:
         data = load_data()
-        
-        # Find the submission
         for internship in data['internships']:
             if internship['id'] == submission_id:
                 return jsonify({
@@ -115,7 +94,6 @@ def get_internship_submission(submission_id):
 
 @training_bp.route('/training', methods=['GET'])
 def get_all_internships():
-    """Get all internship submissions"""
     try:
         data = load_data()
         return jsonify({
@@ -132,21 +110,16 @@ def get_all_internships():
 
 @training_bp.route('/training/stats', methods=['GET'])
 def get_internship_stats():
-    """Get statistics about internship applications"""
     try:
         data = load_data()
         internships = data['internships']
-        
-        # Calculate statistics
         area_counts = {}
         duration_counts = {}
         year_counts = {}
-        
         for internship in internships:
             area = internship['data']['area']
             duration = internship['data']['duration']
             year = internship['data']['year']
-            
             area_counts[area] = area_counts.get(area, 0) + 1
             duration_counts[duration] = duration_counts.get(duration, 0) + 1
             if year:
@@ -171,7 +144,6 @@ def get_internship_stats():
 
 @training_bp.route('/training/areas', methods=['GET'])
 def get_internship_areas():
-    """Get available internship areas"""
     areas = [
         'frontend',
         'backend', 

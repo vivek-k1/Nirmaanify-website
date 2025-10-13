@@ -4,12 +4,9 @@ import os
 from datetime import datetime
 
 services_bp = Blueprint('services', __name__)
-
-# Data file path
 DATA_FILE = 'data/submissions.json'
 
 def load_data():
-    """Load existing data from JSON file"""
     try:
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -17,18 +14,13 @@ def load_data():
         return {'contacts': [], 'services': [], 'internships': []}
 
 def save_data(data):
-    """Save data to JSON file"""
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 @services_bp.route('/services', methods=['POST'])
 def submit_service_request():
-    """Handle service request form submission"""
     try:
-        # Get form data
         form_data = request.get_json()
-        
-        # Validate required fields
         required_fields = ['name', 'email', 'service', 'project-details']
         for field in required_fields:
             if not form_data.get(field):
@@ -36,8 +28,6 @@ def submit_service_request():
                     'success': False,
                     'error': f'Missing required field: {field}'
                 }), 400
-        
-        # Create service request submission
         service_submission = {
             'id': f'service_{datetime.now().strftime("%Y%m%d_%H%M%S")}',
             'type': 'service_request',
@@ -52,17 +42,9 @@ def submit_service_request():
                 'timeline': form_data.get('timeline', '')
             }
         }
-        
-        # Load existing data
         data = load_data()
-        
-        # Add new service submission
         data['services'].append(service_submission)
-        
-        # Save updated data
         save_data(data)
-        
-        # Log submission (for debugging)
         print(f"🔧 New service request from: {form_data['name']} ({form_data['email']})")
         print(f"   Service: {form_data['service']}")
         print(f"   Company: {form_data.get('company', 'Not specified')}")
@@ -85,11 +67,8 @@ def submit_service_request():
 
 @services_bp.route('/services/<submission_id>', methods=['GET'])
 def get_service_submission(submission_id):
-    """Get a specific service submission by ID"""
     try:
         data = load_data()
-        
-        # Find the submission
         for service in data['services']:
             if service['id'] == submission_id:
                 return jsonify({
@@ -110,7 +89,6 @@ def get_service_submission(submission_id):
 
 @services_bp.route('/services', methods=['GET'])
 def get_all_services():
-    """Get all service submissions"""
     try:
         data = load_data()
         return jsonify({
@@ -127,19 +105,14 @@ def get_all_services():
 
 @services_bp.route('/services/stats', methods=['GET'])
 def get_service_stats():
-    """Get statistics about service requests"""
     try:
         data = load_data()
         services = data['services']
-        
-        # Calculate statistics
         service_counts = {}
         budget_counts = {}
-        
         for service in services:
             service_type = service['data']['service']
             budget = service['data']['budget']
-            
             service_counts[service_type] = service_counts.get(service_type, 0) + 1
             if budget:
                 budget_counts[budget] = budget_counts.get(budget, 0) + 1

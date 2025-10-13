@@ -1,0 +1,74 @@
+{
+  "faqs": [
+    {
+      "id": 1,
+      "question": "What services does Nirmaanify offer?",
+      "answer": "Nirmaanify offers comprehensive technology solutions including web development, mobile application development, cloud solutions, and tech training programs. We specialize in creating custom websites, mobile apps for iOS and Android, and scalable cloud infrastructure.",
+      "category": "services",
+      "keywords": ["services", "web development", "mobile apps", "cloud", "training"]
+    },
+    {
+      "id": 2,
+      "question": "How can I get started with your internship program?",
+      "answer": "To join our internship program, visit our training page and fill out the registration form. We offer hands-on experience in cutting-edge technologies with mentorship opportunities. The program duration varies from 3-6 months depending on the area of focus.",
+      "category": "internship",
+      "keywords": ["internship", "training", "program", "registration", "mentorship"]
+    },
+    {
+      "id": 3,
+      "question": "What technologies do you use for web development?",
+      "answer": "We use modern web technologies including React, Node.js, Python (Flask/Django), HTML5, CSS3, JavaScript, and various databases. Our development approach focuses on responsive design, performance optimization, and user experience.",
+      "category": "technology",
+      "keywords": ["web development", "technologies", "react", "nodejs", "python", "responsive"]
+    },
+    {
+      "id": 4,
+      "question": "How much does your training program cost?",
+      "answer": "Our training programs are competitively priced and offer excellent value for the hands-on experience and mentorship provided. For specific pricing details, please contact us through our contact form or email us at contact@nirmaanify.com.",
+      "category": "pricing",
+      "keywords": ["training", "cost", "pricing", "price", "fee"]
+    },
+    {
+      "id": 5,
+      "question": "Do you provide certificates after completing the training?",
+      "answer": "Yes, we provide certificates upon successful completion of our training programs. These certificates are recognized in the industry and can help enhance your professional portfolio and career prospects.",
+      "category": "certification",
+      "keywords": ["certificate", "certification", "completion", "portfolio", "career"]
+    },
+    {
+      "id": 6,
+      "question": "What is the duration of your internship program?",
+      "answer": "Our internship programs typically last between 3-6 months, depending on the specific area of focus and the depth of learning required. We offer flexible scheduling to accommodate different learning paces and commitments.",
+      "category": "internship",
+      "keywords": ["internship", "duration", "months", "schedule", "flexible"]
+    },
+    {
+      "id": 7,
+      "question": "Can I work on real projects during the internship?",
+      "answer": "Absolutely! Our internship program focuses on hands-on experience with real-world projects. You'll work on actual client projects under the guidance of experienced mentors, helping you build a strong portfolio.",
+      "category": "internship",
+      "keywords": ["real projects", "hands-on", "client projects", "portfolio", "experience"]
+    },
+    {
+      "id": 8,
+      "question": "How do I contact Nirmaanify for business inquiries?",
+      "answer": "You can contact us through multiple channels: email us at contact@nirmaanify.com, call us at +91-326-6356-5201, or fill out the contact form on our website. We typically respond within 24 hours.",
+      "category": "contact",
+      "keywords": ["contact", "email", "phone", "business", "inquiry"]
+    },
+    {
+      "id": 9,
+      "question": "What makes Nirmaanify different from other tech companies?",
+      "answer": "Nirmaanify combines innovation with practical learning. We're not just a service provider but also a learning hub that empowers the next generation of tech professionals through comprehensive training and real-world project experience.",
+      "category": "company",
+      "keywords": ["different", "innovation", "learning", "empower", "tech professionals"]
+    },
+    {
+      "id": 10,
+      "question": "Do you offer remote internship opportunities?",
+      "answer": "Yes, we offer both in-person and remote internship opportunities to accommodate different preferences and circumstances. Our remote programs maintain the same quality of mentorship and hands-on experience.",
+      "category": "internship",
+      "keywords": ["remote", "internship", "online", "flexible", "work from home"]
+    }
+  ]
+}

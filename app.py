@@ -14,23 +14,24 @@ CORS(app)
 app.config['SECRET_KEY'] = 'nirmaanify-secret-key-2025'
 app.config['JSON_AS_ASCII'] = False
 
-# Data file path
 DATA_FILE = 'data/submissions.json'
 
 app.register_blueprint(contact_bp, url_prefix='/api')
 app.register_blueprint(services_bp, url_prefix='/api')
 app.register_blueprint(training_bp, url_prefix='/api')
+try:
+    from controllers.faq_controller import faq_bp
+    app.register_blueprint(faq_bp, url_prefix='/api')
+    print("FAQ endpoints enabled")
+except Exception as e:
+    print(f"FAQ endpoints disabled: {e}")
 
-# Ensure data directory exists
 os.makedirs('data', exist_ok=True)
-
-# Initialize data file if it doesn't exist
 if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump({'contacts': [], 'services': [], 'internships': []}, f, ensure_ascii=False, indent=2)
 
 def load_data():
-    """Load existing data from JSON file"""
     try:
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -38,7 +39,6 @@ def load_data():
         return {'contacts': [], 'services': [], 'internships': []}
 
 def get_database_stats():
-    """Get statistics from JSON data"""
     data = load_data()
     return {
         'total_contacts': len(data.get('contacts', [])),
@@ -85,7 +85,6 @@ def get_submissions():
 
 @app.route('/api/stats')
 def get_stats():
-    """Get statistics from JSON data"""
     try:
         stats = get_database_stats()
         return jsonify({
@@ -118,11 +117,11 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_ENV') != 'production'
     
-    print("🚀 Starting Nirmaanify Flask Server...")
-    print(f"📱 Website will be available at: http://localhost:{port}")
-    print("🔧 API endpoints available at: http://localhost:5000/api")
-    print("📊 View submissions at: http://localhost:5000/api/submissions")
-    print("💚 Health check at: http://localhost:5000/api/health")
+    print("Starting Nirmaanify Flask Server...")
+    print(f"Website will be available at: http://localhost:{port}")
+    print("API endpoints available at: http://localhost:5000/api")
+    print("View submissions at: http://localhost:5000/api/submissions")
+    print("Health check at: http://localhost:5000/api/health")
     print("\n" + "="*50)
     
     app.run(

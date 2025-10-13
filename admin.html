@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Nirmaanify</title>
+    <link rel="icon" type="image/jpeg" href="nirmaanify-logo.jpg">
+    <link rel="apple-touch-icon" href="nirmaanify-logo.jpg">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Password Protection Styles */
         .password-overlay {
             position: fixed;
             top: 0;
@@ -89,7 +90,6 @@
             display: block;
         }
 
-        /* Always show admin header */
         .admin-header {
             display: block !important;
         }
@@ -326,7 +326,6 @@
             font-style: italic;
         }
         
-        /* Filter indicators */
         .filter-indicator {
             display: inline-block;
             background: #6A3EE8;
@@ -338,7 +337,6 @@
             font-weight: 500;
         }
         
-        /* Mobile responsiveness */
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -579,22 +577,18 @@
         }
 
         function logout() {
-            // Clear authentication
             isAuthenticated = false;
             sessionStorage.removeItem('adminAuthenticated');
             
-            // Hide admin content and show password overlay
             const adminContent = document.getElementById('adminContent');
             const passwordOverlay = document.getElementById('passwordOverlay');
             
             adminContent.classList.remove('authenticated');
             passwordOverlay.style.display = 'flex';
             
-            // Clear password input
             document.getElementById('passwordInput').value = '';
             document.getElementById('errorMessage').style.display = 'none';
             
-            // Focus on password input
             document.getElementById('passwordInput').focus();
         }
 
@@ -628,12 +622,10 @@
         function filterSubmissions(filter) {
             currentFilter = filter;
             
-            // Update active card
             document.querySelectorAll('.stat-card').forEach(card => {
                 card.classList.remove('active');
             });
             
-            // Find and activate the clicked card
             const cardMapping = {
                 'contacts': 0,
                 'services': 1,
@@ -646,7 +638,6 @@
                 cards[cardMapping[filter]].classList.add('active');
             }
             
-            // Update section title
             const sectionTitle = document.querySelector('.section-title');
             switch(filter) {
                 case 'contacts':
@@ -664,7 +655,6 @@
                     break;
             }
             
-            // Display filtered submissions
             if (submissionsData) {
                 displaySubmissions(submissionsData, filter);
             }
@@ -688,7 +678,6 @@
 
             let filteredSubmissions = [];
             
-            // Filter submissions based on selected filter
             switch(filter) {
                 case 'contacts':
                     filteredSubmissions = data.contacts.map(s => ({...s, category: 'Contact'}));
@@ -701,7 +690,6 @@
                     break;
                 case 'all':
                 default:
-                    // Combine all submissions
                     filteredSubmissions = [
                         ...data.contacts.map(s => ({...s, category: 'Contact'})),
                         ...data.services.map(s => ({...s, category: 'Service'})),
@@ -710,7 +698,6 @@
                     break;
             }
             
-            // Sort by timestamp (newest first)
             filteredSubmissions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
             if (filteredSubmissions.length === 0) {
@@ -735,7 +722,6 @@
             
             let dataHtml = '';
             
-            // Generate data fields based on submission type
             Object.entries(data).forEach(([key, value]) => {
                 if (value) {
                     const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
@@ -783,5 +769,6 @@
             }
         }, 30000);
     </script>
+    <script src="faq-chat.js"></script>
 </body>
 </html>
